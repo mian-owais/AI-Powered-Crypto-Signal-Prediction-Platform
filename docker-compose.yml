@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  crypto-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_RUNONCESAVE=true
+      - STREAMLIT_LOGGER_LEVEL=info
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    restart: unless-stopped

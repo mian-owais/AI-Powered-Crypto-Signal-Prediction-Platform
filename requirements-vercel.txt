@@ -1,0 +1,11 @@
+pandas>=2.0.0
+numpy>=2.0.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+streamlit>=1.28.0
+requests>=2.31.0
+pycoingecko>=3.1.0
+ta>=0.10.0
+joblib>=1.3.0
+python-dotenv>=1.0.0
+plotly>=5.17.0
