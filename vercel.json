@@ -1,13 +1,24 @@
 {
-  "buildCommand": "pip install -r requirements.txt",
-  "installCommand": "pip install -r requirements.txt",
-  "framework": "streamlit",
-  "env": {
-    "PYTHONUNBUFFERED": "1"
-  },
+  "version": 2,
+  "buildCommand": "pip install -r requirements-vercel.txt",
+  "installCommand": "pip install -r requirements-vercel.txt",
+  "framework": "python",
   "functions": {
     "api/app.py": {
-      "runtime": "python3.11"
+      "runtime": "python3.11",
+      "memory": 3008,
+      "maxDuration": 60
     }
-  }
+  },
+  "env": {
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONPATH": "."
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/app.py",
+      "methods": ["GET", "POST", "OPTIONS"]
+    }
+  ]
 }
