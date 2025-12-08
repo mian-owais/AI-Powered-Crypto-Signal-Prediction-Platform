@@ -16,7 +16,10 @@ from sklearn.metrics import (
 import streamlit as st
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Optional, Union
-import shap
+try:
+    import shap
+except ImportError:
+    shap = None
 import joblib
 from pathlib import Path
 

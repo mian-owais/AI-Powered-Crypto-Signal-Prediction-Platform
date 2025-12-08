@@ -3,18 +3,17 @@ streamlit_app.py - Real-time multi-coin trading dashboard with RL integration.
 Run with: streamlit run src/app/streamlit_app.py
 """
 
-import sys
-import os
-
-# Fix import path for Streamlit Cloud deployment
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-if ROOT_DIR not in sys.path:
-    sys.path.insert(0, ROOT_DIR)
-
-from src.model_predict_trend import predict_and_log
-from src.rl_agent import DQNAgent
-from src.self_learning_loop import verify_pending_predictions
-from src.model_manager import predict_with_model, train_model_for_prediction
+import streamlit as st
+import requests
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+import pandas as pd
+import numpy as np
+from typing import Dict, Any
+from pathlib import Path
+from datetime import datetime, timedelta
+import io
+import base64
 from src.eval_utils import (
     compute_classification_metrics,
     plot_confusion_matrix,
@@ -26,18 +25,19 @@ from src.eval_utils import (
     load_prediction_logs,
     load_backtest_results,
 )
-import base64
-import io
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, Any
+from src.model_manager import predict_with_model, train_model_for_prediction
+from src.self_learning_loop import verify_pending_predictions
+from src.rl_agent import DQNAgent
+from src.model_predict_trend import predict_and_log
+import sys
+import os
 
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
-import streamlit as st
+# Fix import path for Streamlit Cloud deployment
+ROOT_DIR = os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.abspath(__file__))))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 
 # Optional dependencies
 try:
@@ -91,13 +91,13 @@ def fetch_market_chart(coin_id: str, days: float = 1.0) -> pd.DataFrame:
         try:
             url = f"{COINGECKO_BASE}/coins/{coin_id}/market_chart"
             params = {"vs_currency": "usd", "days": str(days)}
-            
+
             # Add API key if available
             import os
             api_key = os.environ.get("COINGECKO_API_KEY")
             if api_key:
                 params["x_cg_demo_api_key"] = api_key
-                
+
             r = requests.get(url, params=params, timeout=15)
             if r.status_code == 429:
                 if attempt < max_retries - 1:
@@ -213,33 +213,40 @@ def render_trading_tab():
     st.title("📈 Real-time Multi-Coin Candlestick + Prediction Dashboard")
     with st.sidebar:
         st.header("Settings")
-        
+
         # Get current index for selectboxes based on session state
         coin_options = list(COINS.keys())
-        coin_index = coin_options.index(st.session_state.selected_coin) if st.session_state.selected_coin in coin_options else 0
-        
+        coin_index = coin_options.index(
+            st.session_state.selected_coin) if st.session_state.selected_coin in coin_options else 0
+
         timeframe_options = ["Next 5 Minutes", "Next Day", "Next Week"]
-        timeframe_index = timeframe_options.index(st.session_state.selected_timeframe) if st.session_state.selected_timeframe in timeframe_options else 1
-        
+        timeframe_index = timeframe_options.index(
+            st.session_state.selected_timeframe) if st.session_state.selected_timeframe in timeframe_options else 1
+
         model_options = ["RandomForest", "XGBoost", "RL_Agent", "Random"]
-        model_index = model_options.index(st.session_state.selected_model) if st.session_state.selected_model in model_options else 0
-        
+        model_index = model_options.index(
+            st.session_state.selected_model) if st.session_state.selected_model in model_options else 0
+
         # Create selectboxes that sync with session state
         # When user changes these, update the shared session state
         coin_label = st.selectbox(
             "Cryptocurrency", coin_options, index=coin_index, key="trading_coin")
-        timeframe = st.selectbox("Prediction timeframe", timeframe_options, index=timeframe_index, key="trading_timeframe")
-        model_name = st.selectbox("Prediction Model", model_options, index=model_index, key="trading_model")
-        
+        timeframe = st.selectbox("Prediction timeframe", timeframe_options,
+                                 index=timeframe_index, key="trading_timeframe")
+        model_name = st.selectbox(
+            "Prediction Model", model_options, index=model_index, key="trading_model")
+
         # Sync widget values to shared session state
         st.session_state.selected_coin = coin_label
         st.session_state.selected_timeframe = timeframe
         st.session_state.selected_model = model_name
         auto_refresh = st.checkbox("Auto Refresh (60s)", value=True)
-        retrain_model = st.checkbox("Retrain Model with Fresh Data", value=True)
+        retrain_model = st.checkbox(
+            "Retrain Model with Fresh Data", value=True)
         st.markdown("---")
         st.markdown("Data source: CoinGecko API")
-        st.markdown("**Note:** Models train on fresh + historical data when you change settings")
+        st.markdown(
+            "**Note:** Models train on fresh + historical data when you change settings")
 
     coin_id = COINS[coin_label]
     if auto_refresh and st_autorefresh is not None:
@@ -267,7 +274,7 @@ def render_trading_tab():
         return
 
     latest_price = float(ohlc["close"].iloc[-1])
-    
+
     # Use ML model prediction if not "Random"
     if model_name != "Random":
         try:
@@ -279,24 +286,29 @@ def render_trading_tab():
                     days=training_days,
                     retrain=retrain_model
                 )
-                
+
                 # Map ML prediction to display format
                 pred_label = ml_pred.get('predicted_label', 'Unknown')
                 pred_pct = ml_pred.get('predicted_pct_change', 0.0)
                 confidence = ml_pred.get('confidence', 0.0)
-                
+
                 if pred_label == "Increase":
-                    pred = {"trend": "Increase", "pct": float(pred_pct), "color": "green", "emoji": "📈"}
+                    pred = {"trend": "Increase", "pct": float(
+                        pred_pct), "color": "green", "emoji": "📈"}
                 elif pred_label == "Decrease":
-                    pred = {"trend": "Decrease", "pct": float(pred_pct), "color": "red", "emoji": "📉"}
+                    pred = {"trend": "Decrease", "pct": float(
+                        pred_pct), "color": "red", "emoji": "📉"}
                 else:
-                    pred = {"trend": "Constant", "pct": float(pred_pct), "color": "goldenrod", "emoji": "⚖️"}
-                
+                    pred = {"trend": "Constant", "pct": float(
+                        pred_pct), "color": "goldenrod", "emoji": "⚖️"}
+
                 pred['confidence'] = confidence
                 pred['model_used'] = model_name
-                pred['predicted_price'] = ml_pred.get('predicted_price', latest_price)
+                pred['predicted_price'] = ml_pred.get(
+                    'predicted_price', latest_price)
         except Exception as e:
-            st.warning(f"ML model prediction failed ({e}), using fallback prediction")
+            st.warning(
+                f"ML model prediction failed ({e}), using fallback prediction")
             pred = predict_trend(ohlc, timeframe)
             pred['model_used'] = "Fallback"
     else:
@@ -340,17 +352,20 @@ def render_evaluation_tab():
     """Render the evaluation and error analysis tab."""
     st.title("📊 Evaluation & Error Analysis")
     col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
-    
+
     # Get current index for selectboxes based on session state
     coin_options = list(COINS.keys())
-    coin_index = coin_options.index(st.session_state.selected_coin) if st.session_state.selected_coin in coin_options else 0
-    
+    coin_index = coin_options.index(
+        st.session_state.selected_coin) if st.session_state.selected_coin in coin_options else 0
+
     timeframe_options = ["Next 5 Minutes", "Next Day", "Next Week"]
-    timeframe_index = timeframe_options.index(st.session_state.selected_timeframe) if st.session_state.selected_timeframe in timeframe_options else 1
-    
+    timeframe_index = timeframe_options.index(
+        st.session_state.selected_timeframe) if st.session_state.selected_timeframe in timeframe_options else 1
+
     model_options = ["RandomForest", "XGBoost", "LSTM", "RL_Agent"]
-    model_index = model_options.index(st.session_state.selected_model) if st.session_state.selected_model in model_options else 0
-    
+    model_index = model_options.index(
+        st.session_state.selected_model) if st.session_state.selected_model in model_options else 0
+
     with col1:
         coin_label = st.selectbox(
             "Cryptocurrency", coin_options, index=coin_index, key="eval_coin")
@@ -475,7 +490,7 @@ def main():
     """Main application entry point."""
     st.set_page_config(page_title="Crypto Trading Dashboard",
                        layout="wide", initial_sidebar_state="expanded")
-    
+
     # Initialize session state for synchronized selections
     if 'selected_coin' not in st.session_state:
         st.session_state.selected_coin = list(COINS.keys())[0]
@@ -483,7 +498,7 @@ def main():
         st.session_state.selected_timeframe = "Next Day"
     if 'selected_model' not in st.session_state:
         st.session_state.selected_model = "RandomForest"
-    
+
     tab1, tab2 = st.tabs(["🎯 Live Trading", "📊 Evaluation"])
     with tab1:
         render_trading_tab()
