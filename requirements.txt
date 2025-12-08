@@ -1,22 +1,16 @@
 # Core API
-flask==2.3.3
-flask-cors==4.0.0
+flask>=2.3.0
+flask-cors>=4.0.0
 
 # Data science
-pandas==2.0.3
-numpy==1.24.3
-scikit-learn==1.3.0
-xgboost==2.0.0
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.3.0
+xgboost>=2.0.0
 
 # Utilities
-requests==2.31.0
-python-dotenv==1.0.0
-
-# Web server
-gunicorn==21.2.0
-
-# CSP Solver
-python-constraint
+requests>=2.31.0
+python-dotenv>=1.0.0
 
 # Streamlit app
 streamlit>=1.28.0
@@ -27,13 +21,7 @@ plotly>=5.0.0
 
 # Optional features
 reportlab
-torch
 
 # API data
 yfinance
 ta
-
-# Dev tools (optional)
-black
-flake8
-ipython
