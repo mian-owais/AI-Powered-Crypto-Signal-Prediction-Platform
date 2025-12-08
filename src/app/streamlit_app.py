@@ -3,6 +3,14 @@ streamlit_app.py - Real-time multi-coin trading dashboard with RL integration.
 Run with: streamlit run src/app/streamlit_app.py
 """
 
+import sys
+import os
+
+# Fix import path for Streamlit Cloud deployment
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 from src.model_predict_trend import predict_and_log
 from src.rl_agent import DQNAgent
 from src.self_learning_loop import verify_pending_predictions

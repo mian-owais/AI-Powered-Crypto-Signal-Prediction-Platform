@@ -19,12 +19,19 @@ gunicorn==21.2.0
 python-constraint
 
 # Streamlit app
-streamlit
+streamlit>=1.28.0
 streamlit-autorefresh
+
+# Plotting
+plotly>=5.0.0
 
 # Optional features
 reportlab
 torch
+
+# API data
+yfinance
+ta
 
 # Dev tools (optional)
 black
