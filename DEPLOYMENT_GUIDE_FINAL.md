@@ -30,7 +30,9 @@ The API backend (`api/app.py`) is optimized for Vercel's serverless environment.
     *   **Root Directory:** Keep as `./`.
     *   **Build Command:** `pip install -r requirements-vercel.txt`
     *   **Output Directory:** Keep default (usually `.` or `public`).
-    *   **Environment Variables:** Add any API keys if you have them (e.g., `COINGECKO_API_KEY`).
+    *   **Environment Variables:**
+        *   Key: `COINGECKO_API_KEY`
+        *   Value: `CG-ySQS8gQ3m2oyEg75gw3Tg5nR`
 
 4.  **Deploy:**
     *   Click **"Deploy"**.

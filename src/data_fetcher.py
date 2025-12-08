@@ -17,6 +17,13 @@ def fetch_price_series(coin_id: str, days: float = 7.0, interval: str = '5m') ->
     try:
         url = f"{COINGECKO_BASE}/coins/{coin_id}/market_chart"
         params = {"vs_currency": "usd", "days": str(days)}
+        
+        # Add API key if available
+        import os
+        api_key = os.environ.get("COINGECKO_API_KEY")
+        if api_key:
+            params["x_cg_demo_api_key"] = api_key
+            
         r = requests.get(url, params=params, timeout=15)
         if r.status_code != 200:
             return pd.DataFrame()

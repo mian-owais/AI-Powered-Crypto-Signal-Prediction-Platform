@@ -83,6 +83,13 @@ def fetch_market_chart(coin_id: str, days: float = 1.0) -> pd.DataFrame:
         try:
             url = f"{COINGECKO_BASE}/coins/{coin_id}/market_chart"
             params = {"vs_currency": "usd", "days": str(days)}
+            
+            # Add API key if available
+            import os
+            api_key = os.environ.get("COINGECKO_API_KEY")
+            if api_key:
+                params["x_cg_demo_api_key"] = api_key
+                
             r = requests.get(url, params=params, timeout=15)
             if r.status_code == 429:
                 if attempt < max_retries - 1:
