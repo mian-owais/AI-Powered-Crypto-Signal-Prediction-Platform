@@ -1,24 +1,26 @@
 {
   "version": 2,
-  "buildCommand": "pip install -r requirements-vercel.txt",
-  "installCommand": "pip install -r requirements-vercel.txt",
-  "framework": "python",
-  "functions": {
-    "api/app.py": {
-      "runtime": "python3.11",
-      "memory": 3008,
-      "maxDuration": 60
-    }
-  },
+  "framework": "flask",
+  "buildCommand": "pip install -r requirements.txt",
+  "outputDirectory": ".",
   "env": {
-    "PYTHONUNBUFFERED": "1",
-    "PYTHONPATH": "."
+    "PYTHON_VERSION": "3.11"
+  },
+  "functions": {
+    "api/*.py": {
+      "memory": 3008,
+      "maxDuration": 60,
+      "runtime": "python3.11"
+    }
   },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/app.py",
-      "methods": ["GET", "POST", "OPTIONS"]
+      "dest": "/api/app.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/app.py"
     }
   ]
 }

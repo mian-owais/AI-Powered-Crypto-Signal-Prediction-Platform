@@ -1,19 +1,12 @@
-pandas
-numpy
-scikit-learn
-xgboost
-tensorflow
-keras
-shap
-streamlit
-matplotlib
-seaborn
-requests
-pycoingecko
-ta
-joblib
-python-dotenv
-plotly
+flask==2.3.3
+flask-cors==4.0.0
+pandas==2.0.3
+numpy==1.24.3
+scikit-learn==1.3.0
+xgboost==2.0.0
+requests==2.31.0
+python-dotenv==1.0.0
+gunicorn==21.2.0
 # CSP solver
 python-constraint
 # Optional dependencies (for enhanced features)
