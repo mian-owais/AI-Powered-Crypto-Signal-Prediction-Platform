@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Crypto Predictor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI Crypto Predictor</h1>
+            <p>Powered by Machine Learning & Vercel</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="input-group">
+                    <label for="crypto-select">Select Cryptocurrency</label>
+                    <select id="crypto-select">
+                        <option value="bitcoin">Bitcoin (BTC)</option>
+                        <option value="ethereum">Ethereum (ETH)</option>
+                        <option value="solana">Solana (SOL)</option>
+                        <option value="cardano">Cardano (ADA)</option>
+                        <option value="ripple">XRP (XRP)</option>
+                        <option value="dogecoin">Dogecoin (DOGE)</option>
+                    </select>
+                </div>
+
+                <button id="predict-btn" onclick="makePrediction()">
+                    <span id="btn-text">Analyze & Predict</span>
+                    <div id="loader" class="loader hidden"></div>
+                </button>
+            </div>
+
+            <div id="result-card" class="card result-card hidden">
+                <div class="result-header">
+                    <h2 id="result-crypto">Bitcoin</h2>
+                    <span id="result-timestamp">Just now</span>
+                </div>
+                
+                <div class="price-grid">
+                    <div class="price-item">
+                        <span class="label">Current Price</span>
+                        <span class="value" id="current-price">$0.00</span>
+                    </div>
+                    <div class="price-item">
+                        <span class="label">Predicted Price</span>
+                        <span class="value" id="predicted-price">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="prediction-badge" id="prediction-badge">
+                    <span id="change-percent">0.00%</span>
+                    <span id="trend-text">Neutral</span>
+                </div>
+            </div>
+
+            <div id="error-message" class="error-message hidden">
+                Something went wrong. Please try again.
+            </div>
+        </main>
+
+        <footer>
+            <p>Note: This is a demo running on Vercel Serverless.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
