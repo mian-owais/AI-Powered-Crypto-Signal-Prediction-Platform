@@ -104,11 +104,11 @@ def compute_classification_metrics(df: pd.DataFrame) -> Dict:
     """
     if df.empty:
         return {'accuracy': 0.0, 'weighted_precision': 0.0, 'weighted_recall': 0.0, 'weighted_f1': 0.0}
-    
+
     # Check if required columns exist
     if 'actual_label' not in df.columns or 'predicted_label' not in df.columns:
         return {'accuracy': 0.0, 'weighted_precision': 0.0, 'weighted_recall': 0.0, 'weighted_f1': 0.0}
-    
+
     y_true = df['actual_label']
     y_pred = df['predicted_label']
 
@@ -147,9 +147,9 @@ def plot_confusion_matrix(df: pd.DataFrame) -> go.Figure:
         # Return empty figure with message
         fig = go.Figure()
         fig.add_annotation(text="No verified predictions available yet.<br>Predictions need to be verified to show confusion matrix.",
-                          xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
+                           xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
         return fig
-    
+
     # Compute confusion matrix
     cm = confusion_matrix(df['actual_label'], df['predicted_label'])
     labels = sorted(df['actual_label'].unique())
@@ -189,9 +189,9 @@ def plot_roc_curve(df: pd.DataFrame) -> go.Figure:
     if df.empty or 'actual_label' not in df.columns:
         fig = go.Figure()
         fig.add_annotation(text="No verified predictions available yet.<br>Predictions need to be verified to show ROC curve.",
-                          xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
+                           xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
         return fig
-    
+
     fig = go.Figure()
     classes = sorted(df['actual_label'].unique())
 
@@ -250,9 +250,9 @@ def plot_calibration_curve(df: pd.DataFrame) -> go.Figure:
     if df.empty or 'actual_label' not in df.columns:
         fig = go.Figure()
         fig.add_annotation(text="No verified predictions available yet.<br>Predictions need to be verified to show calibration curve.",
-                          xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
+                           xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False)
         return fig
-    
+
     fig = go.Figure()
     classes = sorted(df['actual_label'].unique())
 
@@ -427,11 +427,11 @@ def get_worst_predictions(
     """
     if df.empty:
         return pd.DataFrame()
-    
+
     # Determine which columns are available
     available_cols = df.columns.tolist()
     result_cols = ['timestamp', 'predicted_label']
-    
+
     # Add optional columns if they exist
     if 'predicted_prob' in available_cols:
         result_cols.append('predicted_prob')
@@ -445,7 +445,7 @@ def get_worst_predictions(
         result_cols.append('coin')
     if 'timeframe' in available_cols:
         result_cols.append('timeframe')
-    
+
     if by == 'confidence':
         # High confidence but wrong predictions
         if 'actual_label' in available_cols and 'predicted_prob' in available_cols:
@@ -471,7 +471,7 @@ def get_worst_predictions(
         else:
             # No error data, return first n rows
             worst = df.head(n)
-    
+
     # Only return columns that exist
     result_cols = [col for col in result_cols if col in worst.columns]
     if result_cols:
